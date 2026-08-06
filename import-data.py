@@ -27,7 +27,7 @@ for item in data['list']:
     mrt = item['MRT']
     lat = float(item['latitude'])
     lng = float(item['longitude'])
-    #cursor.execute("INSERT INTO attractions (id, name, category, description, address, transport, mrt, lat, lng) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (id, name, category, description, address, direction, mrt, lat, lng)  )
+    cursor.execute("INSERT INTO attractions (id, name, category, description, address, transport, mrt, lat, lng) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (id, name, category, description, address, direction, mrt, lat, lng)  )
     #存 attraction_images 資料
     imgurl = item['imgurls']
     paths = imgurl.split('/imgs/')
