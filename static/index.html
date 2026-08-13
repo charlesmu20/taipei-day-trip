@@ -4,8 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Index</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <span class="navbar-title">台北一日遊</span>
+      <div class="navbar-actions">
+        <button class="navbar-btn">預定行程</button>
+        <button class="navbar-btn">登入/註冊</button>
+      </div>
+    </div>
+  </nav>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-inner">
+        <div class="slogan">
+          <p class="slogan-title">輕鬆享受台北一日悠閒</p>
+          <p class="slogan-desc">探索每個角落，體驗城市的深度旅遊行程</p>
+        </div>
+        <div class="search">
+          <div class="search-bar">
+            <button class="search-category" type="button" id="categoryBtn">
+              <span id="categoryLabel">全部分類 ▼</span> 
+            </button>
+            <input type="text" class="search-input" placeholder="輸入景點名稱查詢">
+            <button class="search-btn" type="button" aria-label="搜尋">
+              <img src="/static/search.png" alt="">
+            </button>
+          </div>
+          <div class="category-menu" id="categoryMenu" hidden></div>
+        </div>
+      </div>
+    </div>
+  </section>
+<!-- Attraction Section -->
+<section class="attraction-section">
+  <!-- List bar-->
+  <div class="list-bar">
+    <div class="left-container">
+      <button class="arrow-btn arrow-left" type="button" aria-label="向左">
+        <img src="/static/left-arrow.png" alt="">
+      </button>
+    </div>
+    <div class="container">
+      <div class="list-item-container" id="mrtList">
+      </div>
+    </div>
+    <div class="right-container">
+      <button class="arrow-btn arrow-right" type="button" aria-label="向右">
+        <img src="/static/right-arrow.png" alt="">
+      </button>
+    </div>
+  </div>
+  <!-- attractions-->
+  <div class="attractions">
+    <div class="attractions-group" id="attractionsGroup"></div>
+    <div id="scrollSentinel"></div>
+  </div>
+</section>
+<footer class="footer">
+  <div class="footer-inner">
+    <p class="footer-text">COPYRIGHT © 2021 台北一日遊</p>
+  </div>
+</footer>
+<script src="/static/index.js"></script>
 </body>
 </html>
