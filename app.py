@@ -2,6 +2,7 @@ from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
 import mysql.connector
 import os
+from fastapi.staticfiles import StaticFiles
 def get_connection():
     password = os.environ.get('DB_PASSWORD')
     con = mysql.connector.connect(
@@ -128,6 +129,8 @@ async def get_mrts():
 	except Exception as e:
 		print(e)
 		return JSONResponse(status_code=500, content={"error":True, "message":"取得捷運資料時發生錯誤"})
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
 async def index(request: Request):
