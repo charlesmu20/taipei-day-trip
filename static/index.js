@@ -26,8 +26,9 @@ function renderAttractions(attractions) {
   const container = document.getElementById('attractionsGroup');
 
   attractions.forEach((item) => {
-    const card = document.createElement('div');
+    const card = document.createElement('a');
     card.className = 'attraction';
+    card.href = `/attraction/${item.id}`;
 
     const attractionContainer = document.createElement('div');
     attractionContainer.className = 'attraction-container';
