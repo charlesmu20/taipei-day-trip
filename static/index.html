@@ -10,39 +10,41 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="navbar-inner">
-      <a href="/" class="navbar-title">台北一日遊</a>
-      <div class="navbar-actions">
-        <button class="navbar-btn">預定行程</button>
-        <button class="navbar-btn">登入/註冊</button>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="navbar-title">台北一日遊</a>
+    <div class="navbar-actions">
+      <button class="navbar-btn">預定行程</button>
+      <button class="navbar-btn" id="authTrigger"></button>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-content">
+    <div class="hero-inner">
+      <div class="slogan">
+        <p class="slogan-title">輕鬆享受台北一日悠閒</p>
+        <p class="slogan-desc">探索每個角落，體驗城市的深度旅遊行程</p>
+      </div>
+      <div class="search">
+        <div class="search-bar">
+          <button class="search-category" type="button" id="categoryBtn">
+            <span id="categoryLabel">全部分類 ▼</span> 
+          </button>
+          <input type="text" class="search-input" placeholder="輸入景點名稱查詢">
+          <button class="search-btn" type="button" aria-label="搜尋">
+            <img src="/static/search.png" alt="">
+          </button>
+        </div>
+        <div class="category-menu" id="categoryMenu" hidden></div>
       </div>
     </div>
-  </nav>
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="hero-content">
-      <div class="hero-inner">
-        <div class="slogan">
-          <p class="slogan-title">輕鬆享受台北一日悠閒</p>
-          <p class="slogan-desc">探索每個角落，體驗城市的深度旅遊行程</p>
-        </div>
-        <div class="search">
-          <div class="search-bar">
-            <button class="search-category" type="button" id="categoryBtn">
-              <span id="categoryLabel">全部分類 ▼</span> 
-            </button>
-            <input type="text" class="search-input" placeholder="輸入景點名稱查詢">
-            <button class="search-btn" type="button" aria-label="搜尋">
-              <img src="/static/search.png" alt="">
-            </button>
-          </div>
-          <div class="category-menu" id="categoryMenu" hidden></div>
-        </div>
-      </div>
-    </div>
-  </section>
+  </div>
+</section>
+
 <!-- Attraction Section -->
 <section class="attraction-section">
   <!-- List bar-->
@@ -68,11 +70,47 @@
     <div id="scrollSentinel"></div>
   </div>
 </section>
+
+<!-- Footer -->
 <footer class="footer">
   <div class="footer-inner">
     <p class="footer-text">COPYRIGHT © 2021 台北一日遊</p>
   </div>
 </footer>
+
+<!-- 登入/註冊彈窗 -->
+<div class="dialog-overlay" id="dialogOverlay">
+  <div class="dialog-signin" id="dialogSignin">
+    <div class="decorator-bar"></div>
+    <button class="icon-close" id="dialogClose" type="button" aria-label="關閉">
+      <img src="/static/icon_close.png" alt="">
+    </button>
+    <!-- 登入表單 -->
+    <div class="dialog-main" id="signinForm" >
+      <h2 class="dialog-title">登入會員帳號</h2>
+      <div class="dialog-container">
+        <input type="email" class="dialog-input" id="signinEmail" placeholder="輸入電子信箱">
+        <input type="password" class="dialog-input" id="signinPassword" placeholder="輸入密碼">
+        <button class="dialog-btn" id="signinBtn" type="button">登入帳戶</button>
+        <p class="dialog-switch" id="switchToSignup">還沒有帳戶？點此註冊</p>
+        <p class="dialog-error" id="signinError"></p>
+      </div>
+    </div>
+    <!-- 註冊表單，預設藏起來 -->
+    <div class="dialog-main" id="signupForm" style="display:none;">
+      <h2 class="dialog-title">註冊會員帳號</h2>
+      <div class="dialog-container">
+        <input type="text" class="dialog-input" id="signupName" placeholder="輸入姓名">
+        <input type="email" class="dialog-input" id="signupEmail" placeholder="輸入電子郵件">
+        <input type="password" class="dialog-input" id="signupPassword" placeholder="輸入密碼">
+        <button class="dialog-btn" id="signupBtn" type="button">註冊新帳戶</button>
+        <p class="dialog-error" id="signupError"></p>
+        <p class="dialog-switch" id="switchToSignin">已經有帳戶了？點此登入</p>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="/static/index.js"></script>
+<script src="/static/auth.js"></script>
 </body>
 </html>
