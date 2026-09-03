@@ -28,6 +28,13 @@ class UserSignUpInput(BaseModel):
 class UserSignInInput(BaseModel):
 	email: str
 	password: str
+# booking 收到的資聊格式
+class BookingInput(BaseModel):
+	attractionId: int
+	date: str
+	time: str
+	price: int
+
 # --------------  Attraction -------------------
 #/api/attractions
 @app.get("/api/attractions")
@@ -145,7 +152,8 @@ async def get_mrts():
 	except Exception as e:
 		print(e)
 		return JSONResponse(status_code=500, content={"error":True, "message":"取得捷運資料時發生錯誤"})
-# -------------- User -------------------
+
+# region 會員
 # 註冊會員
 @app.post("/api/user")
 async def sign_up(user: UserSignUpInput):
@@ -235,6 +243,125 @@ async def get_current_user(request: Request):
 		# TOKEN無效或過期，一律視為未登入
 		print(e)
 		return {"data": None}
+# endregion
+
+# region Booking
+# 從Authorization header解析JWT token，回傳user_id；驗證失敗或未登入則回傳None
+def get_user_id_from_token(request: Request):
+	auth_header = request.headers.get("Authorization")
+	if not auth_header:
+		return None
+	token = auth_header.replace("Bearer ", "")
+	try:
+		payload = jwt.decode(token, os.environ.get('JWT_SECRET'), algorithms=["HS256"])
+		return payload["id"]
+	except Exception:
+		return None
+# POST /api/booking
+@app.post("/api/booking")
+async def create_booking(request:Request, booking: BookingInput):
+	#檢查登入狀態
+	user_id = get_user_id_from_token(request)
+	if user_id is None:
+		return JSONResponse(status_code=403, content={"error": True, "message": "請先登入"})
+	if not booking.date:
+		return JSONResponse(status_code=400, content={"error": True, "message": "請選擇日期"})
+	#確認時間格式是否正確
+	if booking.time not in ("morning", "afternoon"):
+		return JSONResponse(status_code=400, content={"error": True, "message": "時間格式不正確"})
+	# 價格由後端根據time計算，
+	price = 2000 if booking.time == "morning" else 2500
+
+	try:
+		con = get_connection()
+		cursor = con.cursor()
+		# 確認景點編號是否存在
+		cursor.execute("SELECT id FROM attractions WHERE id = %s", (booking.attractionId,))
+		row = cursor.fetchone()
+		if row is None:
+			cursor.close()
+			con.close()
+			return JSONResponse(status_code=400, content={"error": True, "message": "景點編號不正確"})
+		# 先刪除使用者原本有的預約
+		cursor.execute("DELETE FROM bookings WHERE user_id = %s", (user_id,))
+		# 新增這筆預約
+		cursor.execute(
+			"INSERT INTO bookings (user_id, attraction_id, date, time, price) VALUES (%s, %s, %s, %s, %s)",
+			(user_id, booking.attractionId, booking.date, booking.time, price)
+		)
+		con.commit()
+		cursor.close()
+		con.close()
+		return {"ok": True}
+	except Exception as e:
+		print(e)
+		return JSONResponse(status_code=500, content={"error": True, "message": "建立預約時發生錯誤"}) 
+# GET /api/booking
+@app.get("/api/booking")
+async def get_booking(request: Request):
+	# 檢查登入狀態
+	user_id = get_user_id_from_token(request)
+	if user_id is None:
+		return JSONResponse(status_code=403, content={"error": True, "message": "請先登入"})
+	try:
+		con = get_connection()
+		cursor = con.cursor()
+		# 一次拿景點資料＋預約資訊
+		cursor.execute(
+			"""
+			SELECT attractions.id, attractions.name, attractions.address, attraction_images.image_url,
+				bookings.date, bookings.time, bookings.price
+			FROM bookings
+			JOIN attractions ON bookings.attraction_id = attractions.id
+			LEFT JOIN attraction_images ON attraction_images.attraction_id = attractions.id
+			WHERE bookings.user_id = %s
+			LIMIT 1
+			""",
+			(user_id,)
+		)
+		row = cursor.fetchone()
+		cursor.close()
+		con.close()
+
+		if row is None:
+			return {"data": None}
+
+		booking_data = {
+			"attraction": {
+				"id": row[0],
+				"name": row[1],
+				"address": row[2],
+				"image": row[3]
+			},
+			"date": str(row[4]),
+			"time": row[5],
+			"price": row[6]
+		}
+		return {"data": booking_data}
+	except Exception as e:
+		print(e)
+		return JSONResponse(status_code=500, content={"error": True, "message": "取得預約資料時發生錯誤"})
+# DELETE /api/booking
+@app.delete("/api/booking")
+async def delete_booking(request: Request):
+	# 檢查登入狀態
+	user_id = get_user_id_from_token(request)
+	if user_id is None:
+		return JSONResponse(status_code=403, content={"error": True, "message": "請先登入"})
+
+	try:
+		con = get_connection()
+		cursor = con.cursor()
+		cursor.execute("DELETE FROM bookings WHERE user_id = %s", (user_id,))
+		con.commit()
+		cursor.close()
+		con.close()
+		return {"ok": True}
+	except Exception as e:
+		print(e)
+		return JSONResponse(status_code=500, content={"error": True, "message": "刪除預約時發生錯誤"})
+	
+# endregion
 # --------------------------------------------------
 app.mount("/static", StaticFiles(directory="static"), name="static")
 # Static Pages (Never Modify Code in this Block)
