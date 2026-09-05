@@ -2,15 +2,29 @@ const dialogOverlay = document.getElementById('dialogOverlay')
 const authTrigger = document.getElementById('authTrigger');
 const signinForm = document.getElementById('signinForm');
 const signupForm = document.getElementById('signupForm');
-// 綁定開關事件
+// 開啟登入視窗（顯示登入表單）
+function openSigninDialog() {
+  signinForm.style.display = 'flex';
+  signupForm.style.display = 'none';
+  dialogOverlay.style.display = 'flex';
+}
+// 預定行程 按鈕
+function setupBookingTrigger() {
+  document.getElementById('bookingTrigger').addEventListener('click', () => {
+    if (isLoggedIn) {
+      location.href = '/booking';
+    } else {
+      openSigninDialog();
+    }
+  });
+}
+// 綁定登入/登出按鈕開關事件
 function setupDialogToggle(){
     authTrigger.addEventListener('click',function(){
         if (isLoggedIn) {
             signOut();
         } else {
-            signinForm.style.display = 'flex';
-            signupForm.style.display = 'none';
-            dialogOverlay.style.display = 'flex';          
+            openSigninDialog()
         }
     });
     document.getElementById('dialogClose').addEventListener('click',function(){
@@ -38,6 +52,7 @@ async function checkAuthStatus() {
         });
         const result = await res.json();
         renderAuthStatus(result.data);
+        return result.data; //把使用者資料回傳出去
     } catch (err) {
         console.error('取得登入狀態失敗', err);
     }
@@ -140,6 +155,7 @@ function setupSignIn() {
 }
 setupDialogToggle();
 setupFormSwitch();
-checkAuthStatus();
+let authCheckPromise = checkAuthStatus();  
 setupSignUp();
 setupSignIn();
+setupBookingTrigger();

@@ -1,5 +1,6 @@
 let images = [];
 let currentIndex = 0;
+let attractionId = null;
 // 預先載入所有圖片
 function preloadImages(urls) {
   urls.forEach((url) => {
@@ -7,13 +8,14 @@ function preloadImages(urls) {
     img.src = url;
   });
 }
-//從網頁抓景點id
+// 從網頁抓景點id
 function getAttractionId() {
   return window.location.pathname.split('/').pop();
 }
-//抓後端景點資料
+
+// 抓後端景點資料
 async function loadAttraction(){
-  const attractionId = getAttractionId();
+  attractionId = parseInt(getAttractionId());
   try {
     const res = await fetch(`/api/attraction/${attractionId}`);
     const result = await res.json();
@@ -28,7 +30,7 @@ async function loadAttraction(){
     console.error('取得景點資料失敗', err);
 }
 }
-//渲染畫面
+// 渲染畫面
 function renderAttraction(attraction) {
   
   document.getElementById('profileTitle').textContent = attraction.name;
@@ -45,6 +47,9 @@ function renderAttraction(attraction) {
   document.getElementById('infoAddress').textContent = attraction.address;
   document.getElementById('infoTransport').textContent = attraction.transport;
 }
+// #region 時間/價格選擇
+
+let currentPrice = 2000; //預設值
 function setupTimeSelection() {
   const radios = document.querySelectorAll('input[name="timeSlot"]');
   radios.forEach((radio) => {
@@ -55,9 +60,12 @@ function setupTimeSelection() {
 }
 function updatePrice(timeSlot) {
   const price = timeSlot === 'morning' ? 2000 : 2500;
+  currentPrice = price;
   document.getElementById('priceValue').textContent = `新台幣 ${price} 元`;
 }
-//渲染圖片
+// #endregion
+
+// #region 圖片
 
 // 顯示目前這張圖片
 function renderImage() {
@@ -93,6 +101,43 @@ function setupArrows() {
     updateIndicators();
   });
 }
+// #endregion
+
+// #region 預約行程
+function setupBooking() {
+  document.getElementById('btnBooking').addEventListener('click', async() =>{
+    //未登入跳出登入視窗
+    if (!isLoggedIn) {
+      openSigninDialog();
+      return;
+    }
+    const date = document.getElementById('dateInput').value;
+    const time = document.querySelector('input[name="timeSlot"]:checked').value;
+    const price = currentPrice;
+    
+    try {
+      const res = await fetch('/api/booking',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({attractionId, date, time, price})
+      });
+      const result = await res.json();
+
+      if (res.ok) {
+        location.href = '/booking';
+      } else {
+        alert(result.message);
+      }
+    } catch (err){
+      console.error('建立預約失敗', err);
+    }
+  })
+}
+// #endregion
 setupArrows();
 setupTimeSelection();
 loadAttraction();
+setupBooking();
