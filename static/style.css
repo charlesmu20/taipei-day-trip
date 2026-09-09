@@ -1054,10 +1054,7 @@
   line-height: 13.3px;
   color: #666666;
 }
-.form-input::placeholder {
-  font-weight: 500;
-  color: #757575;
-}
+
     /* ===== Confirm ===== */
 
 .confirm-section {
@@ -1092,6 +1089,10 @@
   font-size: 19px;
   line-height: 16px;
   color: #FFFFFF;
+}
+.confirm-btn:disabled {
+  background-color: #CCCCCC;
+  cursor: not-allowed;
 }
 @media (max-width: 1034px) {
   .booking-headline {
@@ -1185,3 +1186,45 @@ body.booking-page .footer {
 }
 /* #endregion */
 
+/* #region thankyou.html */
+body.thankyou-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+body.thankyou-page .footer {
+  flex: 1;
+  align-items: flex-start;
+}
+.thankyou-headline {
+  max-width: 1000px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.thankyou-headline {
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+@media (max-width: 1034px) {
+  .thankyou-headline {
+    max-width: none;
+    width: 100%;
+    margin: 20px 0;
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 700px) {
+  .thankyou-headline {
+    padding: 0 10px;
+  }
+  .thankyou-order-wrap {
+    display: block;
+    margin-top: 10px;
+  }
+}
+/* #endregion */
