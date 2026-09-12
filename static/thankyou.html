@@ -4,8 +4,97 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thank You</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-<body>
-  
+<body class="thankyou-page">
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="navbar-title">台北一日遊</a>
+    <div class="navbar-actions">
+      <button class="navbar-btn" id="bookingTrigger">預定行程</button>
+      <button class="navbar-btn" id="authTrigger"></button>
+    </div>
+  </div>
+</nav>
+
+<!-- 主內容區塊 -->
+<main class="booking-main">
+  <div class="thankyou-headline">
+    <p class="headline-text">
+      <span id="thankyouMessage"></span>
+      <span class="thankyou-order-wrap">訂單編號：<span id="orderNumber"></span></span>
+    </p>
+  </div>
+
+  <div class="booking-section" id="orderDetail">
+    <div class="booking-picture">
+      <img alt="" class="booking-img" id="orderImg">
+    </div>
+    <div class="booking-infor">
+      <p class="booking-title" id="orderTitle"></p>
+      <p class="booking-row">
+        <span class="row-label">日期：</span>
+        <span class="row-value" id="orderDate"></span>
+      </p>
+      <p class="booking-row">
+        <span class="row-label">時間：</span>
+        <span class="row-value" id="orderTime"></span>
+      </p>
+      <p class="booking-row">
+        <span class="row-label">費用：</span>
+        <span class="row-value" id="orderPrice"></span>
+      </p>
+      <p class="booking-row">
+        <span class="row-label">地點：</span>
+        <span class="row-value" id="orderAddress"></span>
+      </p>
+    </div>
+  </div>
+</main>
+
+<!-- footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <p class="footer-text">COPYRIGHT © 2021 台北一日遊</p>
+  </div>
+</footer>
+
+<!-- 登入/註冊彈窗 -->
+<div class="dialog-overlay" id="dialogOverlay">
+  <div class="dialog-signin" id="dialogSignin">
+    <div class="decorator-bar"></div>
+    <button class="icon-close" id="dialogClose" type="button" aria-label="關閉">
+      <img src="/static/icon_close.png" alt="">
+    </button>
+    <div class="dialog-main" id="signinForm">
+      <h2 class="dialog-title">登入會員帳號</h2>
+      <div class="dialog-container">
+        <input type="email" class="dialog-input" id="signinEmail" placeholder="輸入電子信箱">
+        <input type="password" class="dialog-input" id="signinPassword" placeholder="輸入密碼">
+        <button class="dialog-btn" id="signinBtn" type="button">登入帳戶</button>
+        <p class="dialog-switch" id="switchToSignup">還沒有帳戶？點此註冊</p>
+        <p class="dialog-error" id="signinError"></p>
+      </div>
+    </div>
+    <div class="dialog-main" id="signupForm" style="display:none;">
+      <h2 class="dialog-title">註冊會員帳號</h2>
+      <div class="dialog-container">
+        <input type="text" class="dialog-input" id="signupName" placeholder="輸入姓名">
+        <input type="email" class="dialog-input" id="signupEmail" placeholder="輸入電子郵件">
+        <input type="password" class="dialog-input" id="signupPassword" placeholder="輸入密碼">
+        <button class="dialog-btn" id="signupBtn" type="button">註冊新帳戶</button>
+        <p class="dialog-error" id="signupError"></p>
+        <p class="dialog-switch" id="switchToSignin">已經有帳戶了？點此登入</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/auth.js"></script>
+<script src="/static/thankyou.js"></script>
 </body>
 </html>

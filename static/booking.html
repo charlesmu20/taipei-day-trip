@@ -26,7 +26,7 @@
   <div class="booking-headline">
     <p class="headline-text">您好，<span class="headline-name" id="headlineName"></span>，待預訂的行程如下：</p>
   </div>
-<div id="bookingContent">
+<div id="bookingContent" style="display:none">
   <!-- section -->
   <div class="booking-section">
     <button class="icon-delete" type="button" aria-label="刪除" id="deleteBtn">
@@ -86,15 +86,15 @@
     <div class="form-fields">
       <div class="form-field">
         <span class="form-label">卡片號碼：</span>
-        <input type="text" class="form-input" id="cardNumber" placeholder="**** **** **** ****">
+        <div class="form-input" id="cardNumber"></div>
       </div>
       <div class="form-field">
         <span class="form-label">過期時間：</span>
-        <input type="text" class="form-input" id="cardExpiry" placeholder="MM / YY">
+        <div class="form-input" id="cardExpiry"></div>
       </div>
       <div class="form-field">
         <span class="form-label">驗證密碼：</span>
-        <input type="text" class="form-input" id="cardCvv" placeholder="CVV">
+        <div class="form-input" id="cardCvv"></div>
       </div>
     </div>
   </div>
@@ -102,7 +102,7 @@
   <!-- confirm -->
   <div class="confirm-section">
     <p class="confirm-total" id="confirmTotal"></p>
-    <button type="button" class="confirm-btn" id="confirmBtn">確認訂購並付款</button>
+    <button type="button" class="confirm-btn" id="confirmBtn" disabled>確認訂購並付款</button>
   </div>
 </div>
 <p class="booking-empty" id="bookingEmpty" style="display:none">目前沒有任何待預訂的行程</p>
@@ -145,6 +145,7 @@
     </div>
   </div>
 </div>
+<script src="https://js.tappaysdk.com/sdk/tpdirect/v5.14.0"></script>
 <script src="/static/auth.js"></script>
 <script src="/static/booking.js"></script>
 </body>
