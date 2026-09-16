@@ -7,22 +7,19 @@ from pydantic import BaseModel
 import requests
 import bcrypt
 import jwt
+import secrets
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
-
+from db import get_connection, create_booking as create_booking_logic
+from mcp_server import mcp_app
 load_dotenv()
-def get_connection():
-    password = os.environ.get('DB_PASSWORD')
-    con = mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password=password,
-        database='taipei_day_trip'
-    )
-    return con
 
 
-app=FastAPI()
+app=FastAPI(lifespan=mcp_app.lifespan)
+app.mount("/mcp", mcp_app)
+
+
+# region BaseModel
 # 註冊API收到的資料格式
 class UserSignUpInput(BaseModel):
 	name: str
@@ -63,7 +60,8 @@ class OrderDetailInput(BaseModel):
 class CreateOrderInput(BaseModel):
     prime: str
     order: OrderDetailInput
-# endregion
+#endregion
+#endregion
 
 # region Attractions
 #/api/attractions
@@ -304,25 +302,9 @@ async def create_booking(request:Request, booking: BookingInput):
 	price = 2000 if booking.time == "morning" else 2500
 
 	try:
-		con = get_connection()
-		cursor = con.cursor()
-		# 確認景點編號是否存在
-		cursor.execute("SELECT id FROM attractions WHERE id = %s", (booking.attractionId,))
-		row = cursor.fetchone()
-		if row is None:
-			cursor.close()
-			con.close()
+		success = create_booking_logic(user_id, booking.attractionId, booking.date, booking.time, price)
+		if not success:
 			return JSONResponse(status_code=400, content={"error": True, "message": "景點編號不正確"})
-		# 先刪除使用者原本有的預約
-		cursor.execute("DELETE FROM bookings WHERE user_id = %s", (user_id,))
-		# 新增這筆預約
-		cursor.execute(
-			"INSERT INTO bookings (user_id, attraction_id, date, time, price) VALUES (%s, %s, %s, %s, %s)",
-			(user_id, booking.attractionId, booking.date, booking.time, price)
-		)
-		con.commit()
-		cursor.close()
-		con.close()
 		return {"ok": True}
 	except Exception as e:
 		print(e)
@@ -544,6 +526,50 @@ async def get_order(request: Request, orderNumber: str):
 		}
 	}
 # endregion
+
+# region mcp-token
+# POST /api/user/mcp-token
+@app.post("/api/user/mcp-token")
+async def create_mcp_token(request: Request):
+	user_id = get_user_id_from_token(request)
+	if user_id is None:
+		return JSONResponse(status_code=403, content={"error": True, "message": "請先登入"})
+	try:
+		new_token = secrets.token_hex(32)
+
+		con = get_connection()
+		cursor = con.cursor()
+		cursor.execute("UPDATE users SET mcp_token = %s WHERE id = %s", (new_token, user_id))
+		con.commit()
+		cursor.close()
+		con.close()
+		return {"data": {"mcp_token": new_token}}
+	except Exception as e:
+		print(e)
+		return JSONResponse(status_code=500, content={"error": True, "message": "產生金鑰時發生錯誤"})
+# GET /api/user/mcp-token
+@app.get("/api/user/mcp-token")
+async def get_mcp_token(request: Request):
+	user_id = get_user_id_from_token(request)
+	if user_id is None:
+		return JSONResponse(status_code=403, content={"error": True, "message": "請先登入"})
+
+	try:
+		con = get_connection()
+		cursor = con.cursor()
+		cursor.execute("SELECT mcp_token FROM users WHERE id = %s", (user_id,))
+		row = cursor.fetchone()
+		cursor.close()
+		con.close()
+		if row is None:
+			return JSONResponse(status_code=404, content={"error": True, "message": "找不到使用者"})
+		
+		return {"data": {"mcp_token": row[0]}}
+	except Exception as e:
+		print(e)
+		return JSONResponse(status_code=500, content={"error": True, "message": "取得金鑰時發生錯誤"})
+
+#endregion
 # --------------------------------------------------
 app.mount("/static", StaticFiles(directory="static"), name="static")
 # Static Pages (Never Modify Code in this Block)
@@ -559,3 +585,6 @@ async def booking(request: Request):
 @app.get("/thankyou", include_in_schema=False)
 async def thankyou(request: Request):
 	return FileResponse("./static/thankyou.html", media_type="text/html")
+@app.get("/member", include_in_schema=False)
+async def member(request: Request):
+	return FileResponse("./static/member.html", media_type="text/html")
