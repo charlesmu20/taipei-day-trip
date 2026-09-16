@@ -1,0 +1,9 @@
+{
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+    "mcpServers":{
+        "taipei-day-trip":{
+            "type": "streamable-http",
+            "url": "http://43.213.36.99:8000/mcp/"
+        }
+    }
+}

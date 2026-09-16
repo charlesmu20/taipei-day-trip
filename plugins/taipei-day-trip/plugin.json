@@ -1,0 +1,6 @@
+{
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+    "name" : "taipei-day-trip",
+    "version": "1.0.0",
+    "description": "台北一日遊景點搜尋與預約"
+}
