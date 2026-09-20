@@ -22,7 +22,7 @@ function setupBookingTrigger() {
 function setupDialogToggle(){
     authTrigger.addEventListener('click',function(){
         if (isLoggedIn) {
-            signOut();
+            location.href = '/member';
         } else {
             openSigninDialog()
         }
@@ -61,7 +61,7 @@ async function checkAuthStatus() {
 function renderAuthStatus(user) {
   if (user) {
     isLoggedIn = true;
-    authTrigger.textContent = '登出系統';
+    authTrigger.textContent = '會員中心';
   } else {
     isLoggedIn = false;
     authTrigger.textContent = '登入/註冊';
